@@ -1276,15 +1276,14 @@
 </div>
 
 <script>
-  // THAY ĐỔI ĐƯỜNG DẪN APPS SCRIPT WEB APP CỦA BẠN VÀO ĐÂY:
+  // THAY ĐỔI ĐƯỜNG DẪN APPS SCRIPT WEB APP
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUGsUYrp_0gT7p-YNUUhvzJk8jNVLrUUfetD9IanY2kUXHuVRbvxul-0N28PDNmFMV/exec";
 
-  const IS_STORE_OPEN = true;
+  const IS_STORE_OPEN = false;
   let productsData = [], cart = [], currentActiveImgUrl = "", currentSelectedProdIdx = null, toastTimeout = null, customerCache = {};
   let currentTempOrder = { customerInfo: null, cartItems: null, orderId: '', totalAmount: 0 };
   let selectedOptionIndex = 0;
 
-  // Cấu trúc giao tiếp Fetch thay cho google.script.run
   async function apiGet(action, params = {}) {
     let url = new URL(APPS_SCRIPT_URL);
     url.searchParams.append("action", action);
