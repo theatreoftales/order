@@ -227,8 +227,6 @@
     input.value = 1;
   }
 
-  function cleanPhone(str) { return str ? String(str).replace(/\D/g, "").replace(/^84/, "0") : ""; }
-
   function switchMainImg(url, el) {
     currentActiveImgUrl = url;
     document.getElementById('detailMainImg').src = url;
