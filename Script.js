@@ -16,11 +16,26 @@
 
   async function apiPost(action, data = {}) {
     data.action = action;
-    const res = await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-    return await res.json();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(data),
+        signal: controller.signal
+      });
+      if (!res.ok) throw new Error("Server trả về HTTP " + res.status);
+      const result = await res.json();
+      if (result && result.status === "error") throw new Error(result.message || "Server báo lỗi.");
+      return result;
+    } catch (err) {
+      if (err && err.name === "AbortError") {
+        throw new Error("Server phản hồi quá lâu (hơn 20 giây). Hãy kiểm tra deployment Apps Script.");
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   window.addEventListener("DOMContentLoaded", function() {
@@ -227,6 +242,8 @@
     input.value = 1;
   }
 
+  function cleanPhone(str) { return str ? String(str).replace(/\D/g, "").replace(/^84/, "0") : ""; }
+
   function switchMainImg(url, el) {
     currentActiveImgUrl = url;
     document.getElementById('detailMainImg').src = url;
@@ -430,6 +447,7 @@
 
     try {
       const res = await apiPost("createOrderTemp", { customerInfo: cInfo, cartItems: cart });
+      if (!res || !res.orderId) throw new Error("Server không trả về mã đơn hàng.");
       btn.disabled = false; btn.innerText = "Xác nhận đơn Hàng";
       currentTempOrder.orderId = res.orderId; currentTempOrder.totalAmount = res.totalAmount;
       document.getElementById('resOrderId').innerText = res.orderId;
