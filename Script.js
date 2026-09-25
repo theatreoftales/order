@@ -2,7 +2,7 @@
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUGsUYrp_0gT7p-YNUUhvzJk8jNVLrUUfetD9IanY2kUXHuVRbvxul-0N28PDNmFMV/exec";
 
   const IS_STORE_OPEN = false;
-  let productsData = [], cart = [], currentActiveImgUrl = "", currentSelectedProdIdx = null, toastTimeout = null, customerCache = {};
+  let productsData = [], cart = [], currentActiveImgUrl = "", currentSelectedProdIdx = null, toastTimeout = null;
   let currentTempOrder = { customerInfo: null, cartItems: null, orderId: '', totalAmount: 0 };
   let selectedOptionIndex = 0;
 
@@ -32,8 +32,6 @@
 
     // Tải danh sách sản phẩm
     apiGet("getProducts").then(data => renderProducts(data)).catch(err => console.error(err));
-    // Tải thông tin khách hàng cache
-    apiGet("getAllCustomersForCache").then(data => { if(data) customerCache = data; }).catch(err => console.error(err));
 
     document.addEventListener("contextmenu", function(e) { e.preventDefault(); });
     document.addEventListener("keydown", function(e) {
@@ -230,17 +228,6 @@
   }
 
   function cleanPhone(str) { return str ? String(str).replace(/\D/g, "").replace(/^84/, "0") : ""; }
-
-  function checkCustomerByPhone() {
-    var phone = cleanPhone(document.getElementById('custPhone').value);
-    if (phone && customerCache[phone]) {
-      var info = customerCache[phone];
-      document.getElementById('custName').value = info.name || '';
-      document.getElementById('custEmail').value = info.email || '';
-      document.getElementById('custAddress').value = info.address || '';
-      document.getElementById('custFb').value = info.facebook || '';
-    }
-  }
 
   function switchMainImg(url, el) {
     currentActiveImgUrl = url;
