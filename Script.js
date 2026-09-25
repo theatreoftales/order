@@ -1,7 +1,7 @@
  // THAY ĐỔI ĐƯỜNG DẪN APPS SCRIPT WEB APP
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUGsUYrp_0gT7p-YNUUhvzJk8jNVLrUUfetD9IanY2kUXHuVRbvxul-0N28PDNmFMV/exec";
 
-  const IS_STORE_OPEN = true;
+  const IS_STORE_OPEN = false;
   let productsData = [], cart = [], currentActiveImgUrl = "", currentSelectedProdIdx = null, toastTimeout = null;
   let currentTempOrder = { customerInfo: null, cartItems: null, orderId: '', totalAmount: 0 };
   let selectedOptionIndex = 0;
