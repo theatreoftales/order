@@ -387,6 +387,15 @@
       opacity: 0.7;
     }
 
+    .stock-notice {
+      display: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #a8322d;
+      margin: -5px 0 15px;
+    }
+.stock-notice.show { display: block; }
+
     .action-row {
       display: flex;
       align-items: center;
@@ -1188,6 +1197,9 @@
             
             <!-- Khu vực hiển thị các nút lựa chọn dàn hàng ngang -->
             <div id="detailOptionList" class="options-grid"></div>
+
+            <!-- Thông báo sắp hết hàng của lựa chọn đang chọn -->
+            <div id="stockNotice" class="stock-notice"></div>
 
             <!-- Khu vực số lượng và nút thêm vào giỏ nằm ở hàng bên dưới -->
             <div class="action-row">
