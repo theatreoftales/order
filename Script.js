@@ -1,7 +1,7 @@
  // THAY ĐỔI ĐƯỜNG DẪN APPS SCRIPT WEB APP
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUGsUYrp_0gT7p-YNUUhvzJk8jNVLrUUfetD9IanY2kUXHuVRbvxul-0N28PDNmFMV/exec";
 
-  const IS_STORE_OPEN = false;
+  const IS_STORE_OPEN = true;
   let productsData = [], cart = [], currentActiveImgUrl = "", currentSelectedProdIdx = null, toastTimeout = null;
   let currentTempOrder = { customerInfo: null, cartItems: null, orderId: '', totalAmount: 0 };
   let selectedOptionIndex = 0;
@@ -183,6 +183,16 @@
     const currentOpt = optionsToRender[selectedOptionIndex];
     const isSoldOut = (parseInt(currentOpt.stock) === 0);
 
+ // Hiện số lượng còn lại khi stock dưới 10 (và chưa hết hàng)
+    const stockNotice = document.getElementById('stockNotice');
+    const stockNum = parseInt(currentOpt.stock);
+    if (IS_STORE_OPEN && stockNum > 0 && stockNum < 10) {
+      stockNotice.innerText = `Chỉ còn ${stockNum} sản phẩm!`;
+      stockNotice.classList.add('show');
+    } else {
+      stockNotice.innerText = '';
+      stockNotice.classList.remove('show');
+    }
     if (!IS_STORE_OPEN) {
       qtyInput.type = "number";
       qtyInput.disabled = false;
