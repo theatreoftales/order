@@ -18,6 +18,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
+    .lang-switch{display:inline-flex;border:1px solid #dcd6d1;border-radius:50px;overflow:hidden;margin:0;background:#fff}
+    .lang-switch button{border:none;background:transparent;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;color:#050c1a;font-family:'Inter',sans-serif}
+    .lang-switch button.active{background:#050c1a;color:#fcfbf9}
+    .header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    @media (max-width:768px){.header-actions{justify-content:space-between}.header-actions .btn{flex:1}}
     .error-msg {
       color: #dc3545 !important;
       font-size: 13px !important;
@@ -1121,19 +1126,19 @@
       
       <div class="sidebar-info">
         <div class="preorder-box">
-          <div class="preorder-title">Thời gian pre-order</div>
+          <div class="preorder-title" data-i18n="preorderTitle">Thời gian pre-order</div>
           <div class="preorder-time">07/10/2026 - 20/10/2026</div>
         </div>
 
         <button class="btn-fes-calendar" onclick="openFesCalendar()">
-          <i class="fas fa-calendar-alt"></i> Lịch fes tham gia
+          <i class="fas fa-calendar-alt"></i> <span data-i18n="fesBtn">Lịch fes tham gia</span>
         </button>
 
-        <p class="sidebar-note">
+        <p class="sidebar-note" data-i18n-html="sidebarNote">
           <strong>Lưu ý:</strong> Tụi mình chỉ giải quyết khiếu nại khi có video unbox không cắt ghép, nên các bạn hãy quay video khi nhận hàng nhé!
         </p>
 
-        <p class="sidebar-text">
+        <p class="sidebar-text" data-i18n="sidebarText">
           Nếu có thắc mắc gì, hãy nhắn tụi mình qua các kênh social dưới đây để được giải đáp sớm nhất nha!
         </p>
       </div>
@@ -1160,9 +1165,9 @@
       <div class="header-bar">
         <div class="search-container">
           <i class="fas fa-search search-icon"></i>
-          <input type="text" id="searchInput" class="search-bar-input" placeholder="Tìm kiếm sản phẩm hoặc nhân vật..." oninput="filterProducts()">
+          <input type="text" id="searchInput" class="search-bar-input" data-i18n-placeholder="searchPh" placeholder="Tìm kiếm sản phẩm hoặc nhân vật..." oninput="filterProducts()">
         </div>
-        <button class="btn btn-brand" onclick="openModal('trackModal')">Tra cứu đơn hàng</button>
+        <div class="header-actions"><div class="lang-switch"><button id="langBtnVi" onclick="setLang('vi')">VI</button><button id="langBtnEn" onclick="setLang('en')">EN</button></div><button class="btn btn-brand" onclick="openModal('trackModal')" data-i18n="trackBtn">Tra cứu đơn hàng</button></div>
       </div>
 
       <div id="storeBannerContainer"></div>
@@ -1172,7 +1177,7 @@
           <img src="https://i.ibb.co/rRcPD6wL/Theatre-of-Teyvat-namecard.jpg" alt="Theatre of Tales">
         </div>
         <div class="vt-fade-mask"></div>
-        <div class="vt-caption">Đang kiểm tra vé<span>.</span><span>.</span><span>.</span></div>
+        <div class="vt-caption" data-i18n-html="loadingHtml">Đang kiểm tra vé<span>.</span><span>.</span><span>.</span></div>
       </div>
 
       <div id="catalogContainer"></div>
@@ -1191,9 +1196,9 @@
           <div class="detail-content">
             <h2 id="detailTitle" class="detail-title"></h2>
             <div id="detailPrice" class="detail-price"></div>
-            <div class="options-title">Mô tả sản phẩm:</div>
+            <div class="options-title" data-i18n="descTitle">Mô tả sản phẩm:</div>
             <div id="detailDescription" class="description-box"></div>
-            <div class="options-title">Các lựa chọn có sẵn:</div>
+            <div class="options-title" data-i18n="optionsTitle">Các lựa chọn có sẵn:</div>
             
             <!-- Khu vực hiển thị các nút lựa chọn dàn hàng ngang -->
             <div id="detailOptionList" class="options-grid"></div>
@@ -1217,7 +1222,7 @@
 
     <div id="fesCalendarView" style="display:none;">
       <button class="btn btn-secondary" style="margin-bottom:20px;" onclick="showCatalogView()">← Theatre of Tales</button>
-      <h2 class="detail-title" style="margin-bottom:25px;">Lịch Fes Tham Gia</h2>
+      <h2 class="detail-title" style="margin-bottom:25px;" data-i18n="fesTitle">Lịch Fes Tham Gia</h2>
       <div id="fesTimelineContainer"></div>
     </div>
   </div>
@@ -1236,10 +1241,10 @@
 <div class="modal-overlay" id="trackModal">
   <div class="modal-content">
     <button class="close-btn" onclick="closeModal('trackModal')"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
-    <h3 style="margin-top:0;color:#050a1d;">Tra cứu vận đơn</h3>
-    <p style="font-size:14px;">Nhập mã đơn hàng để kiểm tra:</p>
-    <input type="text" id="trackInput" placeholder="Ví dụ: TOT2608031234">
-    <button class="btn btn-brand" style="width:100%;margin-top:5px;" onclick="trackOrder()">Tìm kiếm</button>
+    <h3 style="margin-top:0;color:#050a1d;" data-i18n="trackTitle">Tra cứu vận đơn</h3>
+    <p style="font-size:14px;" data-i18n="trackHint">Nhập mã đơn hàng để kiểm tra:</p>
+    <input type="text" id="trackInput" data-i18n-placeholder="trackPh" placeholder="Ví dụ: TOT2608031234">
+    <button class="btn btn-brand" style="width:100%;margin-top:5px;" onclick="trackOrder()" data-i18n="search">Tìm kiếm</button>
     <div id="trackResult" style="margin-top:15px;"></div>
   </div>
 </div>
@@ -1248,29 +1253,29 @@
 <div class="modal-overlay" id="cartModal">
   <div class="modal-content">
     <button class="close-btn" onclick="closeModal('cartModal')"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
-    <h3 style="margin-top:0;color:#050c1a;">Giỏ hàng của bạn</h3>
+    <h3 style="margin-top:0;color:#050c1a;" data-i18n="cartTitle">Giỏ hàng của bạn</h3>
     <div id="cartList">Ở đây trống trải quá...</div>
     <div style="text-align:right;font-size:18px;font-weight:700;margin:15px 0;color:#050c1a;" id="totalPrice">Tổng: 0đ</div>
     
     <hr style="border:none;border-top:1px solid #dcd6d1;margin:20px 0;">
-    <h3 style="color:#050c1a;">Thông tin giao hàng</h3>
+    <h3 style="color:#050c1a;" data-i18n="shipTitle">Thông tin giao hàng</h3>
     
-    <input type="text" id="custPhone" placeholder="Số điện thoại (*)">
+    <input type="text" id="custPhone" data-i18n-placeholder="phPhone" placeholder="Số điện thoại (*)">
     <small class="error-msg" id="errPhone" style="display:none;"></small>
 
-    <input type="text" id="custName" placeholder="Họ và tên người nhận (*)">
+    <input type="text" id="custName" data-i18n-placeholder="phName" placeholder="Họ và tên người nhận (*)">
     <small class="error-msg" id="errName" style="display:none;"></small>
 
     <input type="email" id="custEmail" placeholder="Email (*)">
     <small class="error-msg" id="errEmail" style="display:none;"></small>
 
-    <textarea id="custAddress" placeholder="Địa chỉ giao hàng (*)" rows="2"></textarea>
+    <textarea id="custAddress" data-i18n-placeholder="phAddr" placeholder="Địa chỉ giao hàng (*)" rows="2"></textarea>
     <small class="error-msg" id="errAddress" style="display:none;"></small>
 
-    <input type="url" id="custFb" placeholder="Link Facebook (*)">
+    <input type="url" id="custFb" data-i18n-placeholder="phFb" placeholder="Link Facebook (*)">
     <small class="error-msg" id="errFb" style="display:none;"></small>
 
-    <textarea id="custNote" placeholder="Ghi chú đơn hàng" rows="2"></textarea>
+    <textarea id="custNote" data-i18n-placeholder="phNote" placeholder="Ghi chú đơn hàng" rows="2"></textarea>
 
     <button id="btnSubmitOrder" class="btn btn-success" style="width:100%;padding:12px;margin-top:10px;" onclick="submitOrder(event)">Xác nhận đơn Hàng</button>
   </div>
@@ -1280,10 +1285,10 @@
 <div class="modal-overlay" id="paymentModal">
   <div class="modal-content" style="text-align:center;max-width:380px;padding:22px 18px;">
     <div id="qrStep1">
-      <h3 style="color:#050c1a;margin-top:0;">Thanh toán để hoàn thành đơn</h3>
-      <p>Mã đơn: <b id="resOrderId" style="font-size:15px; color:#050c1a;"></b></p>
-      <p>Tổng tiền: <b id="resTotalAmount" style="font-size:18px; color:#050c1a;"></b> VNĐ</p>
-      <p style="font-size:14px;color:#555;margin:15px 0;">Quét mã QR bên dưới để chuyển khoản:</p>
+      <h3 style="color:#050c1a;margin-top:0;" data-i18n="payTitle">Thanh toán để hoàn thành đơn</h3>
+      <p><span data-i18n="orderCode">Mã đơn:</span> <b id="resOrderId" style="font-size:15px; color:#050c1a;"></b></p>
+      <p><span data-i18n="totalMoney">Tổng tiền:</span> <b id="resTotalAmount" style="font-size:18px; color:#050c1a;"></b> <span data-i18n="vnd">VNĐ</span></p>
+      <p style="font-size:14px;color:#555;margin:15px 0;" data-i18n="scanQr">Quét mã QR bên dưới để chuyển khoản:</p>
       <img id="qrImg" src="" alt="QR Code" style="max-width:250px;border-radius:8px;border:2px solid #050c1a;margin-bottom:15px;"><br>
       <button id="btnPaidConfirm" onclick="confirmPaymentDone()" style="background-color:#050c1a;color:#fff;border:none;padding:12px 24px;font-size:15px;font-weight:700;border-radius:50px;cursor:pointer;">
         Xác nhận đã thanh toán
@@ -1295,13 +1300,13 @@
           <path d="M12 0 C12.5 8.5 15.5 11.5 24 12 C15.5 12.5 12.5 15.5 12 24 C11.5 15.5 8.5 12.5 0 12 C8.5 11.5 11.5 8.5 12 0 Z"/>
         </svg>
       </div>
-      <h3 style="color:#050c1a;font-weight:800;margin:0 0 20px;font-size:17px;letter-spacing:0.1px;text-transform:uppercase;line-height:1.3;white-space:nowrap;">Đặt hàng thành công!</h3>
-      <p style="line-height:1.6;margin:0 0 12px;">Đơn hàng đang được xác nhận thanh toán. Bạn sẽ nhận email thông báo trong vòng 1-2 ngày (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ</p>
-      <p style="line-height:1.6;margin:0 0 24px;">Nếu có gì thắc mắc, hãy nhắn tin qua fanpage <b>Theatre of Tales</b> để tụi mình hỗ trợ nhé ദ്ദി(｡•̀ ,&lt;)~✩‧₊</p>
+      <h3 style="color:#050c1a;font-weight:800;margin:0 0 20px;font-size:17px;letter-spacing:0.1px;text-transform:uppercase;line-height:1.3;white-space:nowrap;" data-i18n="orderSuccess">Đặt hàng thành công!</h3>
+      <p style="line-height:1.6;margin:0 0 12px;" data-i18n="paySuccess1">Đơn hàng đang được xác nhận thanh toán. Bạn sẽ nhận email thông báo trong vòng 1-2 ngày (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ</p>
+      <p style="line-height:1.6;margin:0 0 24px;" data-i18n-html="paySuccess2">Nếu có gì thắc mắc, hãy nhắn tin qua fanpage <b>Theatre of Tales</b> để tụi mình hỗ trợ nhé ദ്ദി(｡•̀ ,&lt;)~✩‧₊</p>
       <div onclick="closeModal('paymentModal')" style="display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
         <span style="flex:1;max-width:60px;height:1px;background:#050c1a;"></span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#050c1a" xmlns="http://www.w3.org/2000/svg"><path d="M12 0 C12.5 8.5 15.5 11.5 24 12 C15.5 12.5 12.5 15.5 12 24 C11.5 15.5 8.5 12.5 0 12 C8.5 11.5 11.5 8.5 12 0 Z"/></svg>
-        <span style="font-weight:700;font-size:15px;color:#050c1a;white-space:nowrap;">Hẹn gặp lại</span>
+        <span style="font-weight:700;font-size:15px;color:#050c1a;white-space:nowrap;" data-i18n="seeYou">Hẹn gặp lại</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#050c1a" xmlns="http://www.w3.org/2000/svg"><path d="M12 0 C12.5 8.5 15.5 11.5 24 12 C15.5 12.5 12.5 15.5 12 24 C11.5 15.5 8.5 12.5 0 12 C8.5 11.5 11.5 8.5 12 0 Z"/></svg>
         <span style="flex:1;max-width:60px;height:1px;background:#050c1a;"></span>
       </div>
