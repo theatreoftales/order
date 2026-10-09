@@ -1,10 +1,138 @@
- // THAY ĐỔI ĐƯỜNG DẪN APPS SCRIPT WEB APP
+// THAY ĐỔI ĐƯỜNG DẪN APPS SCRIPT WEB APP
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuVELtAL3DX-Nh42mWUHWyoFKBs2GOzgYB6eR9dhScw-Eqp_w0vA340JRLuoxh0_S8/exec";
 
   const IS_STORE_OPEN = true;
   let productsData = [], cart = [], currentActiveImgUrl = "", currentSelectedProdIdx = null, toastTimeout = null;
   let currentTempOrder = { customerInfo: null, cartItems: null, orderId: '', totalAmount: 0 };
   let selectedOptionIndex = 0;
+
+const I18N = {
+    vi: {
+      preorderTitle:'Thời gian pre-order', fesBtn:'Lịch fes tham gia',
+      sidebarNote:'<strong>Lưu ý:</strong> Tụi mình chỉ giải quyết khiếu nại khi có video unbox không cắt ghép, nên các bạn hãy quay video khi nhận hàng nhé!',
+      sidebarText:'Nếu có thắc mắc gì, hãy nhắn tụi mình qua các kênh social dưới đây để được giải đáp sớm nhất nha!',
+      searchPh:'Tìm kiếm sản phẩm hoặc nhân vật...', trackBtn:'Tra cứu đơn hàng',
+      loadingHtml:'Đang kiểm tra vé<span>.</span><span>.</span><span>.</span>',
+      descTitle:'Mô tả sản phẩm:', optionsTitle:'Các lựa chọn có sẵn:', fesTitle:'Lịch Fes Tham Gia',
+      trackTitle:'Tra cứu vận đơn', trackHint:'Nhập mã đơn hàng để kiểm tra:', trackPh:'Ví dụ: TOT2608031234', search:'Tìm kiếm',
+      cartTitle:'Giỏ hàng của bạn', shipTitle:'Thông tin giao hàng', phPhone:'Số điện thoại (*)', phName:'Họ và tên người nhận (*)',
+      phAddr:'Địa chỉ giao hàng (*)', phFb:'Link Facebook (*)', phNote:'Ghi chú đơn hàng',
+      payTitle:'Thanh toán để hoàn thành đơn', orderCode:'Mã đơn:', totalMoney:'Tổng tiền:', vnd:'VNĐ',
+      scanQr:'Quét mã QR bên dưới để chuyển khoản:', paidConfirm:'Xác nhận đã thanh toán', orderSuccess:'Đặt hàng thành công!',
+      paySuccess1:'Đơn hàng đang được xác nhận thanh toán. Bạn sẽ nhận email thông báo trong vòng 1-2 ngày (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ',
+      paySuccess2:'Nếu có gì thắc mắc, hãy nhắn tin qua fanpage <b>Theatre of Tales</b> để tụi mình hỗ trợ nhé ദ്ദി(｡•̀ ,&lt;)~✩‧₊',
+      seeYou:'Hẹn gặp lại',
+      closed:'Tụi mình đang tạm nghỉ rồi. Bạn hãy quay lại sau nha!', f12:'Không cho F12 đấy lêu lêu!',
+      noResult:'Không tìm thấy sản phẩm phù hợp.', from:'Từ', newProducts:'Sản phẩm mới', noDesc:'Chưa có mô tả cho sản phẩm này.',
+      displayOnly:'Hàng trưng bày chưa bán', huh:'Hả?', soldOutBtn:'Hết hàng thật rồi mà!', addToCart:'Thêm vào giỏ hàng',
+      soldOutToast:'Sản phẩm này đã hết hàng!', onlyLeft:'Chỉ còn {n} sản phẩm này thui nha!', onlyLeftShort:'Chỉ còn {n} thui nha!',
+      added:'Đã thêm {n} sản phẩm vào giỏ!', fesLoading:'Đang tải lịch fes...', loadError:'Lỗi tải dữ liệu', updating:'Đang cập nhật',
+      noFes:'Hiện chưa có lịch fes nào được cập nhật.', upcoming:'Sắp diễn ra', booth:'Gian',
+      cartEmpty:'Ở đây trống trải quá...', total:'Tổng:', confirmOrder:'Xác nhận đơn Hàng',
+      min100:'Đơn hàng của bạn phải có giá trị tối thiểu 100k', formMissing:'Không tìm thấy đầy đủ phần thông tin đặt hàng. Vui lòng tải lại trang.',
+      errPhone:'Số điện thoại không hợp lệ (10 số)!', errName:'Vui lòng nhập Họ tên!', errEmail:'Email dạng @gmail.com!',
+      errAddr:'Vui lòng nhập Địa chỉ!', errFb:'Vui lòng nhập Link Facebook!', fillAll:'Hãy điền đủ thông tin giúp tụi mình nha!',
+      processing:'Đang xử lý...', timeout:'Apps Script không phản hồi sau 15 giây. Vui lòng kiểm tra phiên bản triển khai Web App rồi thử lại.',
+      badData:'Apps Script đã trả về dữ liệu không hợp lệ. Hãy triển khai lại Web App từ phiên bản mới nhất.',
+      unknown:'Không xác định', scriptError:'Lỗi Apps Script', callError:'Không thể gọi Apps Script',
+      confirming:'Đang xác nhận...', saveFail:'Không thể lưu đơn hàng.', error:'Lỗi',
+      enterCode:'Vui lòng nhập mã đơn hàng!', stockNotice:'Chỉ còn {n} sản phẩm!', httpError:'Server trả về HTTP', serverError:'Server báo lỗi.', slow:'Server phản hồi quá lâu (hơn 20 giây). Hãy kiểm tra deployment Apps Script.', noOrderId:'Server không trả về mã đơn hàng.', connError:'Lỗi kết nối server!', waiting:'Chờ tụi mình xíu nha...'
+    },
+    en: {
+      preorderTitle:'Pre-order period', fesBtn:'Event schedule',
+      sidebarNote:'<strong>Note:</strong> We only handle complaints when there is an uncut unboxing video, so please record a video when you receive your order!',
+      sidebarText:'If you have any questions, message us on the social channels below and we will get back to you as soon as we can!',
+      searchPh:'Search products or characters...', trackBtn:'Track order',
+      loadingHtml:'Checking tickets<span>.</span><span>.</span><span>.</span>',
+      descTitle:'Product description:', optionsTitle:'Available options:', fesTitle:'Event Schedule',
+      trackTitle:'Track your order', trackHint:'Enter your order code to check:', trackPh:'e.g. TOT2608031234', search:'Search',
+      cartTitle:'Your cart', shipTitle:'Shipping information', phPhone:'Phone number (*)', phName:'Recipient full name (*)',
+      phAddr:'Shipping address (*)', phFb:'Facebook link (*)', phNote:'Order note',
+      payTitle:'Pay to complete your order', orderCode:'Order code:', totalMoney:'Total:', vnd:'VND',
+      scanQr:'Scan the QR code below to make a bank transfer:', paidConfirm:'Confirm payment made', orderSuccess:'Order placed successfully!',
+      paySuccess1:'Your payment is being verified. You will receive a confirmation email within 1-2 days (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ',
+      paySuccess2:'If you have any questions, message our <b>Theatre of Tales</b> fanpage and we will be happy to help ദ്ദി(｡•̀ ,&lt;)~✩‧₊',
+      seeYou:'See you again',
+      closed:'We are taking a short break. Please come back later!', f12:'No F12 for you, nyah nyah!',
+      noResult:'No matching products found.', from:'From', newProducts:'New arrivals', noDesc:'No description for this product yet.',
+      displayOnly:'Display item, not for sale', huh:'Huh?', soldOutBtn:'Really sold out!', addToCart:'Add to cart',
+      soldOutToast:'This item is sold out!', onlyLeft:'Only {n} of this item left!', onlyLeftShort:'Only {n} left!',
+      added:'Added {n} item(s) to your cart!', fesLoading:'Loading event schedule...', loadError:'Failed to load data', updating:'To be updated',
+      noFes:'No events have been announced yet.', upcoming:'Upcoming', booth:'Booth',
+      cartEmpty:'It is so empty here...', total:'Total:', confirmOrder:'Confirm order',
+      min100:'Your order must be at least 100,000 VND', formMissing:'Order form fields are missing. Please reload the page.',
+      errPhone:'Invalid phone number (10 digits)!', errName:'Please enter your full name!', errEmail:'Email must be a @gmail.com address!',
+      errAddr:'Please enter your address!', errFb:'Please enter your Facebook link!', fillAll:'Please fill in all the required information!',
+      processing:'Processing...', timeout:'Apps Script did not respond within 15 seconds. Please check your Web App deployment and try again.',
+      badData:'Apps Script returned invalid data. Please redeploy the Web App with the latest version.',
+      unknown:'Unknown', scriptError:'Apps Script error', callError:'Cannot call Apps Script',
+      confirming:'Confirming...', saveFail:'Could not save the order.', error:'Error',
+      enterCode:'Please enter an order code!', stockNotice:'Only {n} left!', httpError:'Server returned HTTP', serverError:'Server reported an error.', slow:'The server took too long to respond (over 20 seconds). Please check the Apps Script deployment.', noOrderId:'The server did not return an order code.', connError:'Server connection error!', waiting:'Just a moment...'
+    }
+  };
+  const FES_STATUS_EN = { 'sắp diễn ra':'Upcoming', 'đang diễn ra':'Ongoing', 'đã kết thúc':'Ended' };
+  let currentLang = 'vi', productsLoaded = false, fesEventsData = [];
+  try {
+    currentLang = localStorage.getItem('tot_lang') || ((navigator.language || 'vi').toLowerCase().indexOf('vi') === 0 ? 'vi' : 'en');
+  } catch (e) { currentLang = (navigator.language || 'vi').toLowerCase().indexOf('vi') === 0 ? 'vi' : 'en'; }
+
+  function t(key, vars) {
+    let s = (I18N[currentLang] && I18N[currentLang][key]);
+    if (s === undefined) s = I18N.vi[key];
+    if (s === undefined) s = key;
+    if (vars) Object.keys(vars).forEach(k => { s = s.replace('{' + k + '}', vars[k]); });
+    return s;
+  }
+  function fmt(n) { n = Number(n) || 0; return currentLang === 'en' ? n.toLocaleString('en-US') : n.toLocaleString(); }
+  function money(n) { return fmt(n) + (currentLang === 'en' ? ' VND' : 'đ'); }
+  function pName(p) { return (currentLang === 'en' && p.nameEn) ? p.nameEn : p.name; }
+  function pDesc(p) {
+    const d = (currentLang === 'en' && p.descriptionEn) ? p.descriptionEn : p.description;
+    return d || t('noDesc');
+  }
+  function cartName(item) { return (currentLang === 'en' && item.nameEn) ? item.nameEn : item.name; }
+  function optLabel(name) { return (currentLang === 'en' && name === 'Mặc định') ? 'Default' : name; }
+
+  function setLang(l) {
+    currentLang = l;
+    try { localStorage.setItem('tot_lang', l); } catch (e) {}
+    applyLang();
+  }
+
+  function applyLang() {
+    document.documentElement.lang = currentLang;
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+    const bv = document.getElementById('langBtnVi'), be = document.getElementById('langBtnEn');
+    if (bv) bv.classList.toggle('active', currentLang === 'vi');
+    if (be) be.classList.toggle('active', currentLang === 'en');
+    const bc = document.getElementById('storeBannerContainer');
+    if (bc) bc.innerHTML = IS_STORE_OPEN ? '' : `<div class="store-closed-banner">（*＾-＾*）${t('closed')}</div>`;
+    const pb = document.getElementById('btnPaidConfirm');
+    if (pb && !pb.disabled) pb.innerText = t('paidConfirm');
+    if (productsLoaded) filterProducts();
+    if (currentSelectedProdIdx !== null && document.getElementById('detailView').style.display === 'block') refreshDetailLang();
+    const fv = document.getElementById('fesCalendarView');
+    if (fv && fv.style.display === 'block' && fesEventsData.length) renderFesTimeline(fesEventsData);
+    renderCart();
+  }
+
+  function refreshDetailLang() {
+    const prod = productsData[currentSelectedProdIdx];
+    if (!prod) return;
+    document.getElementById('detailTitle').innerText = pName(prod);
+    document.getElementById('detailDescription').innerText = pDesc(prod);
+    const opts = (prod.options && prod.options.length > 0) ? prod.options : [{ optionName: "Mặc định", price: prod.price, stock: prod.stock || 9999 }];
+    document.querySelectorAll('.option-pill-btn').forEach((p, i) => { if (opts[i]) p.textContent = optLabel(opts[i].optionName); });
+    updateSelectedOptionPrice(opts[selectedOptionIndex]);
+    const q = document.getElementById('selectedQty');
+    const keep = q.disabled ? null : q.value;
+    updateActionBtnState();
+    if (keep && !q.disabled) q.value = keep;
+  }
+
+  
 
   async function apiGet(action, params = {}) {
     let url = new URL(APPS_SCRIPT_URL);
@@ -24,13 +152,13 @@
         body: JSON.stringify(data),
         signal: controller.signal
       });
-      if (!res.ok) throw new Error("Server trả về HTTP " + res.status);
+      if (!res.ok) throw new Error(t('httpError') + ' ' + res.status);
       const result = await res.json();
-      if (result && result.status === "error") throw new Error(result.message || "Server báo lỗi.");
+      if (result && result.status === "error") throw new Error(result.message || t('serverError'));
       return result;
     } catch (err) {
       if (err && err.name === "AbortError") {
-        throw new Error("Server phản hồi quá lâu (hơn 20 giây). Hãy kiểm tra deployment Apps Script.");
+        throw new Error(t('slow'));
       }
       throw err;
     } finally {
@@ -39,9 +167,10 @@
   }
 
   window.addEventListener("DOMContentLoaded", function() {
+    applyLang();
     const bannerContainer = document.getElementById('storeBannerContainer');
     if (bannerContainer) {
-      let bannerHtml = !IS_STORE_OPEN ? `<div class="store-closed-banner">（*＾-＾*）Tụi mình đang tạm nghỉ rồi. Bạn hãy quay lại sau nha!</div>` : '';
+      let bannerHtml = !IS_STORE_OPEN ? `<div class="store-closed-banner">（*＾-＾*）${t('closed')}</div>` : '';
       bannerContainer.innerHTML = bannerHtml;
     }
 
@@ -52,13 +181,14 @@
     document.addEventListener("keydown", function(e) {
       if (e.key === "F12" || e.keyCode === 123) {
         e.preventDefault();
-        showToast("Không cho F12 đấy lêu lêu!");
+        showToast(t('f12'));
       }
     });
   });
 
   function renderProducts(products) {
     productsData = products || [];
+    productsLoaded = true;
     const loadingBox = document.getElementById('loadingBox');
     if (loadingBox) loadingBox.style.display = 'none';
     filterProducts();
@@ -77,7 +207,7 @@
     });
 
     if (filtered.length === 0) {
-      container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:#666;">Không tìm thấy sản phẩm phù hợp.</div>`;
+      container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:#666;">${t('noResult')}</div>`;
       return;
     }
 
@@ -88,8 +218,8 @@
     const renderGridHtml = (prodList) => {
       return `<div class="products-grid">` + prodList.map((p) => {
         const idx = productsData.findIndex(item => item.name === p.name);
-        const prodName = p.name;
-        const priceText = `Từ ${Number(p.price).toLocaleString()}đ`;
+        const prodName = pName(p);
+        const priceText = t('from') + ' ' + money(p.price);
         return `
           <div class="product-card" onclick="openProductDetail(${idx})">
             <div><img src="${p.images && p.images[0] ? p.images[0] : ''}"><h4>${prodName}</h4></div>
@@ -99,7 +229,7 @@
     };
 
     if (newProducts.length > 0) {
-      htmlOutput += `<div class="section-title" style="margin-bottom: 15px; font-weight: bold; font-size: 1.2rem;">Sản phẩm mới</div>`;
+      htmlOutput += `<div class="section-title" style="margin-bottom: 15px; font-weight: bold; font-size: 1.2rem;">${t('newProducts')}</div>`;
       htmlOutput += renderGridHtml(newProducts);
     }
     if (newProducts.length > 0 && otherProducts.length > 0) {
@@ -123,8 +253,8 @@
       thumbContainer.style.display = 'flex';
     } else { thumbContainer.style.display = 'none'; }
 
-    document.getElementById('detailTitle').innerText = prod.name;
-    document.getElementById('detailDescription').innerText = prod.description || "";
+    document.getElementById('detailTitle').innerText = pName(prod);
+    document.getElementById('detailDescription').innerText = pDesc(prod);
 
     const optListContainer = document.getElementById('detailOptionList');
     let optionsToRender = (prod.options && prod.options.length > 0) ? prod.options : [{ optionName: "Mặc định", price: prod.price, stock: prod.stock || 9999 }];
@@ -133,7 +263,7 @@
       const isSoldOut = (parseInt(opt.stock) === 0);
       return `
         <div class="option-pill-btn ${oIdx === 0 ? 'active' : ''} ${isSoldOut ? 'sold-out' : ''}" onclick="selectOption(${oIdx})">
-          ${opt.optionName}
+          ${optLabel(opt.optionName)}
         </div>`;
     }).join('');
 
@@ -153,10 +283,10 @@
   function updateSelectedOptionPrice(opt) {
     const priceElem = document.getElementById('detailPrice');
     if (opt && opt.price !== undefined) {
-      priceElem.innerText = `${Number(opt.price).toLocaleString()}đ`;
+      priceElem.innerText = `${money(opt.price)}`;
     } else {
       const prod = productsData[currentSelectedProdIdx];
-      priceElem.innerText = `${Number(prod.price).toLocaleString()}đ`;
+      priceElem.innerText = `${money(prod.price)}`;
     }
   }
 
@@ -187,7 +317,7 @@
     const stockNotice = document.getElementById('stockNotice');
     const stockNum = parseInt(currentOpt.stock);
     if (IS_STORE_OPEN && stockNum > 0 && stockNum < 10) {
-      stockNotice.innerText = `Chỉ còn ${stockNum} sản phẩm!`;
+      stockNotice.innerText = t('stockNotice', { n: stockNum });
       stockNotice.classList.add('show');
     } else {
       stockNotice.innerText = '';
@@ -197,24 +327,24 @@
       qtyInput.type = "number";
       qtyInput.disabled = false;
       qtyInput.value = 1;
-      actionContainer.innerHTML = `<button class="btn btn-disabled btn-add-cart" disabled>Hàng trưng bày chưa bán</button>`;
+      actionContainer.innerHTML = `<button class="btn btn-disabled btn-add-cart" disabled>${t('displayOnly')}</button>`;
     } else if (isSoldOut) {
       qtyInput.type = "text";
-      qtyInput.value = "Hả?";
+      qtyInput.value = t('huh');
       qtyInput.disabled = true;
-      actionContainer.innerHTML = `<button class="btn btn-disabled btn-add-cart" disabled>Hết hàng thật rồi mà!</button>`;
+      actionContainer.innerHTML = `<button class="btn btn-disabled btn-add-cart" disabled>${t('soldOutBtn')}</button>`;
     } else {
       qtyInput.type = "number";
       qtyInput.disabled = false;
       qtyInput.value = 1;
-      actionContainer.innerHTML = `<button class="btn btn-success btn-add-cart" onclick="addCurrentOptionToCart()">Thêm vào giỏ hàng</button>`;
+      actionContainer.innerHTML = `<button class="btn btn-success btn-add-cart" onclick="addCurrentOptionToCart()">${t('addToCart')}</button>`;
     }
   }
 
   function changeQty(delta) {
-    if (!IS_STORE_OPEN) return showToast("Hàng trưng bày chưa bán");
+    if (!IS_STORE_OPEN) return showToast(t('displayOnly'));
     const input = document.getElementById('selectedQty');
-    if (input.value === "Hả?") return; 
+    if (input.disabled) return; 
     let val = parseInt(input.value) || 1;
     val = Math.max(1, val + delta);
     input.value = val;
@@ -222,18 +352,18 @@
 
   function onInputQty() {
     const input = document.getElementById('selectedQty');
-    if (input.value === "Hả?") return;
+    if (input.disabled) return;
     let val = parseInt(input.value) || 1;
     if (val < 1) input.value = 1;
   }
 
   function addCurrentOptionToCart() {
-    if (!IS_STORE_OPEN) return showToast("Hàng trưng bày chưa bán");
+    if (!IS_STORE_OPEN) return showToast(t('displayOnly'));
     const prod = productsData[currentSelectedProdIdx];
     let optionsToRender = (prod.options && prod.options.length > 0) ? prod.options : [{ optionName: "Mặc định", price: prod.price, stock: prod.stock || 9999 }];
     const opt = optionsToRender[selectedOptionIndex];
     
-    if (parseInt(opt.stock) === 0) return showToast("Sản phẩm này đã hết hàng!");
+    if (parseInt(opt.stock) === 0) return showToast(t('soldOutToast'));
 
     const input = document.getElementById('selectedQty');
     const qty = parseInt(input.value) || 1;
@@ -242,13 +372,13 @@
     const existing = cart.find(i => i.key === cartKey);
     const currentCartQty = existing ? existing.quantity : 0;
 
-    if (currentCartQty + qty > maxStock) return showToast(`Chỉ còn ${maxStock} sản phẩm này thui nha!`);
+    if (currentCartQty + qty > maxStock) return showToast(t('onlyLeft', { n: maxStock }));
 
     if (existing) existing.quantity += qty;
-    else cart.push({ key: cartKey, name: prod.name, option: opt.optionName, price: opt.price, quantity: qty, stock: maxStock });
+    else cart.push({ key: cartKey, name: prod.name, nameEn: prod.nameEn, option: opt.optionName, price: opt.price, quantity: qty, stock: maxStock });
     
     updateCartBadge();
-    showToast(`Đã thêm ${qty} sản phẩm vào giỏ!`);
+    showToast(t('added', { n: qty }));
     input.value = 1;
   }
 
@@ -277,13 +407,13 @@
     document.getElementById('catalogView').style.display = 'none';
     document.getElementById('detailView').style.display = 'none';
     document.getElementById('fesCalendarView').style.display = 'block';
-    document.getElementById('fesTimelineContainer').innerHTML = `<div style="text-align:center;padding:40px;color:#666;">Đang tải lịch fes...</div>`;
+    document.getElementById('fesTimelineContainer').innerHTML = `<div style="text-align:center;padding:40px;color:#666;">${t('fesLoading')}</div>`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     apiGet("getEvents")
       .then(renderFesTimeline)
       .catch(err => {
-        document.getElementById('fesTimelineContainer').innerHTML = `<div style="text-align:center;padding:40px;color:#d32f2f;">Lỗi tải dữ liệu: ${err.message}</div>`;
+        document.getElementById('fesTimelineContainer').innerHTML = `<div style="text-align:center;padding:40px;color:#d32f2f;">${t('loadError')}: ${err.message}</div>`;
       });
   }
 
@@ -297,7 +427,7 @@
   function buildFesDateBlock(ev) {
     const start = parseFesDate(ev.startDate);
     const end = parseFesDate(ev.endDate);
-    let dateText = "Đang cập nhật";
+    let dateText = t('updating');
     let yearText = "";
 
     if (start && end) {
@@ -317,12 +447,12 @@
   }
 
   function renderFesTimeline(events) {
-    const fesEventsData = events || [];
+    fesEventsData = events || [];
     const container = document.getElementById('fesTimelineContainer');
     if (!container) return;
 
     if (fesEventsData.length === 0) {
-      container.innerHTML = `<div style="text-align:center;padding:40px;color:#666;">Hiện chưa có lịch fes nào được cập nhật.</div>`;
+      container.innerHTML = `<div style="text-align:center;padding:40px;color:#666;">${t('noFes')}</div>`;
       return;
     }
 
@@ -331,10 +461,10 @@
     const itemsHtml = fesEventsData.map(function(ev) {
       const statusKey = (ev.status || "").toLowerCase().trim();
       const statusClass = statusMap[statusKey] || "status-upcoming";
-      const statusLabel = ev.status || "Sắp diễn ra";
+      const statusLabel = (currentLang === 'en' && FES_STATUS_EN[statusKey]) || ev.status || t('upcoming');
       const dateBlockHtml = buildFesDateBlock(ev);
       const imgHtml = ev.image ? `<img class="fes-event-img" src="${ev.image}" alt="${ev.name}">` : "";
-      const boothHtml = ev.booth ? `<span class="fes-booth-pill">Gian ${ev.booth}</span>` : "";
+      const boothHtml = ev.booth ? `<span class="fes-booth-pill">${t('booth')} ${ev.booth}</span>` : "";
       const statusHtml = `<span class="fes-status-badge ${statusClass}">${statusLabel}</span>`;
       const contentHtml = ev.content ? `<div class="fes-event-desc">${ev.content}</div>` : "";
 
@@ -377,19 +507,19 @@
     const container = document.getElementById('cartList');
     const btnSubmit = document.getElementById('btnSubmitOrder');
     if (cart.length === 0) {
-      container.innerHTML = "<div style='text-align:center;padding:20px;color:#666;'>Ở đây trống trải quá...</div>";
-      document.getElementById('totalPrice').innerText = "Tổng: 0đ";
-      if (btnSubmit) { btnSubmit.disabled = true; btnSubmit.className = "btn btn-disabled"; btnSubmit.innerText = "Ở đây trống trải quá..."; }
+      container.innerHTML = `<div style='text-align:center;padding:20px;color:#666;'>${t('cartEmpty')}</div>`;
+      document.getElementById('totalPrice').innerText = t('total') + ' ' + money(0);
+      if (btnSubmit) { btnSubmit.disabled = true; btnSubmit.className = "btn btn-disabled"; btnSubmit.innerText = t('cartEmpty'); }
       return;
     }
-    if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.className = "btn btn-success"; btnSubmit.innerText = "Xác nhận đơn Hàng"; }
+    if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.className = "btn btn-success"; btnSubmit.innerText = t('confirmOrder'); }
 
     let total = 0;
     container.innerHTML = cart.map((item, idx) => {
       total += item.price * item.quantity;
       return `
         <div class="cart-item">
-          <div style="flex:1;"><b>${item.name}</b><br><small>${item.option}</small><br><b style="color:#050c1a;">${Number(item.price).toLocaleString()}đ</b></div>
+          <div style="flex:1;"><b>${cartName(item)}</b><br><small>${optLabel(item.option)}</small><br><b style="color:#050c1a;">${money(item.price)}</b></div>
           <div class="qty-control">
             <button class="qty-btn" onclick="updateCartQty(${idx},-1)">-</button>
             <input type="number" class="qty-input" value="${item.quantity}" readonly>
@@ -400,11 +530,11 @@
           </button>
         </div>`;
     }).join('');
-    document.getElementById('totalPrice').innerText = `Tổng: ${total.toLocaleString()}đ`;
+    document.getElementById('totalPrice').innerText = t('total') + ' ' + money(total);
   }
 
   function updateCartQty(idx, delta) {
-    if (delta > 0 && cart[idx].quantity + delta > cart[idx].stock) return showToast(`Chỉ còn ${cart[idx].stock} thui nha!`);
+    if (delta > 0 && cart[idx].quantity + delta > cart[idx].stock) return showToast(t('onlyLeftShort', { n: cart[idx].stock }));
     cart[idx].quantity += delta;
     if (cart[idx].quantity <= 0) cart.splice(idx, 1);
     updateCartBadge(); renderCart();
@@ -432,31 +562,31 @@
     clearErrors();
     
     let totalCartAmount = cart.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0);
-    if (totalCartAmount < 100000) return showToast("Đơn hàng của bạn phải có giá trị tối thiểu 100k");
+    if (totalCartAmount < 100000) return showToast(t('min100'));
 
     const p = document.getElementById('custPhone').value.trim(), n = document.getElementById('custName').value.trim();
     const em = document.getElementById('custEmail').value.trim(), a = document.getElementById('custAddress').value.trim();
     const fb = document.getElementById('custFb').value.trim(), note = document.getElementById('custNote').value.trim();
 
     let valid = true;
-    if (!p || !/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(p)) { showError('custPhone','errPhone','Số điện thoại không hợp lệ (10 số)!'); valid = false; }
-    if (!n) { showError('custName','errName','Vui lòng nhập Họ tên!'); valid = false; }
-    if (!em || !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(em)) { showError('custEmail','errEmail','Email dạng @gmail.com!'); valid = false; }
-    if (!a) { showError('custAddress','errAddress','Vui lòng nhập Địa chỉ!'); valid = false; }
-    if (!fb) { showError('custFb','errFb','Vui lòng nhập Link Facebook!'); valid = false; }
+    if (!p || !/^(0|\+84)[3|5|7|8|9][0-9]{8}$/.test(p)) { showError('custPhone','errPhone',t('errPhone')); valid = false; }
+    if (!n) { showError('custName','errName',t('errName')); valid = false; }
+    if (!em || !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(em)) { showError('custEmail','errEmail',t('errEmail')); valid = false; }
+    if (!a) { showError('custAddress','errAddress',t('errAddr')); valid = false; }
+    if (!fb) { showError('custFb','errFb',t('errFb')); valid = false; }
 
-    if (!valid) return showToast("Hãy điền đủ thông tin giúp tụi mình nha!");
+    if (!valid) return showToast(t('fillAll'));
 
     const cInfo = { phone: p, name: n, email: em, address: a, facebook: fb, note: note };
     const btn = document.getElementById('btnSubmitOrder');
-    btn.disabled = true; btn.innerText = "Đang xử lý...";
+    btn.disabled = true; btn.innerText = t('processing');
 
     currentTempOrder.customerInfo = cInfo; currentTempOrder.cartItems = cart;
 
     try {
       const res = await apiPost("createOrderTemp", { customerInfo: cInfo, cartItems: cart });
-      if (!res || !res.orderId) throw new Error("Server không trả về mã đơn hàng.");
-      btn.disabled = false; btn.innerText = "Xác nhận đơn Hàng";
+      if (!res || !res.orderId) throw new Error(t('noOrderId'));
+      btn.disabled = false; btn.innerText = t('confirmOrder');
       currentTempOrder.orderId = res.orderId; currentTempOrder.totalAmount = res.totalAmount;
       document.getElementById('resOrderId').innerText = res.orderId;
       document.getElementById('resTotalAmount').innerText = (Number(res.totalAmount)||0).toLocaleString();
@@ -464,14 +594,14 @@
       document.getElementById('qrStep1').style.display = 'block'; document.getElementById('qrStep2').style.display = 'none';
       document.getElementById('cartModal').style.display = 'none'; document.getElementById('paymentModal').style.display = 'flex';
     } catch(err) {
-      btn.disabled = false; btn.innerText = "Xác nhận đơn Hàng";
-      showToast("Lỗi: " + err.message);
+      btn.disabled = false; btn.innerText = t('confirmOrder');
+      showToast(t('error') + ": " + err.message);
     }
   }
 
   async function confirmPaymentDone() {
     const btn = document.getElementById('btnPaidConfirm');
-    btn.disabled = true; btn.innerText = "Đang xác nhận...";
+    btn.disabled = true; btn.innerText = t('confirming');
     try {
       await apiPost("confirmAndSaveOrder", {
         customerInfo: currentTempOrder.customerInfo,
@@ -484,25 +614,25 @@
       cart = []; 
       updateCartBadge();
       btn.disabled = false; 
-      btn.innerText = "Xác nhận đã thanh toán";
+      btn.innerText = t('paidConfirm');
     } catch(err) {
-      alert("Lỗi: " + err.message); 
+      alert(t('error') + ": " + err.message); 
       btn.disabled = false; 
-      btn.innerText = "Xác nhận đã thanh toán"; 
+      btn.innerText = t('paidConfirm'); 
     }
   }
 
   async function trackOrder() {
     const code = document.getElementById('trackInput').value.trim();
     const res = document.getElementById('trackResult');
-    if (!code) return res.innerHTML = "<p style='color:red; font-size:13px;'>Vui lòng nhập mã đơn hàng!</p>";
+    if (!code) return res.innerHTML = `<p style='color:red; font-size:13px;'>${t('enterCode')}</p>`;
     
-    res.innerHTML = "<p style='text-align:center; color:#555;'>Chờ tụi mình xíu nha...</p>";
+    res.innerHTML = `<p style='text-align:center; color:#555;'>${t('waiting')}</p>`;
     try {
-      const data = await apiGet("trackOrderCode", { orderId: code });
+      const data = await apiGet("trackOrderCode", { orderId: code, lang: currentLang });
       res.innerHTML = data.html;
     } catch(err) {
-      res.innerHTML = "<p style='color:red; text-align:center;'>Lỗi kết nối server!</p>";
+      res.innerHTML = `<p style='color:red; text-align:center;'>${t('connError')}</p>`;
     }
   }
 
