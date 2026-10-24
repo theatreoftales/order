@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
   <base target="_top">
+  <title>Theatre of Tales</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light only">
@@ -399,7 +400,7 @@
       color: #a8322d;
       margin: -5px 0 15px;
     }
-.stock-notice.show { display: block; }
+    .stock-notice.show { display: block; }
 
     .action-row {
       display: flex;
@@ -1114,6 +1115,41 @@
       .fes-dot-col { display: flex; }
       .fes-right-col { margin-left: 14px; }
     }
+  
+    /* ===================== CHẾ ĐỘ HIỂN THỊ (order / keep / closed) ===================== */
+    body[data-mode="keep"] .only-order,
+    body[data-mode="closed"] .only-order { display: none !important; }
+    body[data-mode="order"] .only-keep,
+    body[data-mode="closed"] .only-keep { display: none !important; }
+    body[data-mode="keep"] { -webkit-touch-callout: none; }
+
+    .pending-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: #e8e3e0; border: 1px solid #dcd6d1; border-radius: 8px; padding: 10px 14px; margin-bottom: 15px; font-size: 14px; font-weight: 600; color: #050c1a; }
+
+    /* ===================== KEEP: CHỌN HÌNH THỨC THANH TOÁN ===================== */
+    .payment-options-container { display: flex; gap: 15px; margin-top: 20px; }
+    .payment-options-container.busy { opacity: 0.6; pointer-events: none; }
+    .payment-card { flex: 1; padding: 20px; border: 2px solid #050c1a; border-radius: 10px; background: #fcfbf9; cursor: pointer; text-align: center; font-weight: bold; color: #050c1a; transition: 0.2s; text-transform: uppercase; }
+    .payment-card:hover { background: #050c1a; color: #fff; }
+
+    /* ===================== KEEP: VÉ SAU KHI ĐẶT ===================== */
+    .ticket-bill-modal-content { background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; max-width: 400px !important; }
+    .receipt-wrapper { padding: 10px 0; display: flex; justify-content: center; }
+    .ticket-bill-modal-content .thermal-receipt { max-width: none; background-color: #fbfbfb; padding: 24px 20px 30px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-radius: 0; }
+    .ticket-bill-modal-content .receipt-header { text-align: center; padding: 0 10px; margin-bottom: 0; }
+    .ticket-bill-modal-content .receipt-divider { border-top: 1px dashed #222222; margin: 12px 0; }
+    .ticket-bill-modal-content .fake-barcode-container { margin: 35px 0 2px 0; }
+    .ticket-bill-modal-content .fake-barcode-font { font-size: 55px; }
+    .receipt-logo { width: auto !important; max-width: 80% !important; max-height: 100px !important; height: auto !important; display: block !important; margin: 0 auto 10px auto !important; object-fit: contain !important; filter: grayscale(100%) contrast(120%); }
+    .receipt-cust-info { text-align: left; font-size: 12px; line-height: 1.5; }
+    .receipt-cust-name { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+    .receipt-time-row { font-size: 11px; color: #333; }
+    .receipt-note-row { text-align: left; font-size: 11px; color: #555; line-height: 1.5; margin: 8px 0; }
+    .receipt-note-row b { font-style: italic; }
+    .receipt-total-row { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; margin-top: 10px; }
+    .receipt-payment-note { font-size: 15px; color: #333; text-align: center; margin: 2px 0 12px 0; font-style: italic; }
+    .receipt-footer-text { font-size: 10px; text-align: center; line-height: 1.4; margin-top: 10px; font-style: italic; }
+    .ticket-action-btns { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+
   </style>
 </head>
 <body>
@@ -1123,20 +1159,18 @@
     <div style="width: 100%;">
       <img class="brand-logo" src="https://graph.facebook.com/TheatreofTales/picture?type=large" id="logoImg" alt="Logo">
       <h1 class="brand-name">Theatre of Tales</h1>
-      
+
       <div class="sidebar-info">
-        <div class="preorder-box">
-          <div class="preorder-title" data-i18n="preorderTitle">Thời gian pre-order</div>
-          <div class="preorder-time">07/10/2026 - 20/10/2026</div>
+        <div class="preorder-box" id="modeBox">
+          <div class="preorder-title" data-i18n="preorderTitle" data-i18n-keep="keepTitle">Thời gian pre-order</div>
+          <div class="preorder-time" id="modeTime"></div>
         </div>
 
         <button class="btn-fes-calendar" onclick="openFesCalendar()">
           <i class="fas fa-calendar-alt"></i> <span data-i18n="fesBtn">Lịch fes tham gia</span>
         </button>
 
-        <p class="sidebar-note" data-i18n-html="sidebarNote">
-          <strong>Lưu ý:</strong> Tụi mình chỉ giải quyết khiếu nại khi có video unbox không cắt ghép, nên các bạn hãy quay video khi nhận hàng nhé!
-        </p>
+        <p class="sidebar-note" id="modeNote" data-i18n-html="sidebarNote" data-i18n-html-keep="sidebarNoteKeep"></p>
 
         <p class="sidebar-text" data-i18n="sidebarText">
           Nếu có thắc mắc gì, hãy nhắn tụi mình qua các kênh social dưới đây để được giải đáp sớm nhất nha!
@@ -1167,7 +1201,15 @@
           <i class="fas fa-search search-icon"></i>
           <input type="text" id="searchInput" class="search-bar-input" data-i18n-placeholder="searchPh" placeholder="Tìm kiếm sản phẩm hoặc nhân vật..." oninput="filterProducts()">
         </div>
-        <div class="header-actions"><div class="lang-switch"><button id="langBtnVi" onclick="setLang('vi')">VI</button><button id="langBtnEn" onclick="setLang('en')">EN</button></div><button class="btn btn-brand" onclick="openModal('trackModal')" data-i18n="trackBtn">Tra cứu đơn hàng</button></div>
+        <div class="header-actions">
+          <div class="lang-switch"><button id="langBtnVi" onclick="setLang('vi')">VI</button><button id="langBtnEn" onclick="setLang('en')">EN</button></div>
+          <button class="btn btn-brand" id="btnTrackOrder" style="display:none;" onclick="openModal('trackModal')" data-i18n="trackBtn">Tra cứu đơn hàng</button>
+        </div>
+      </div>
+
+      <div id="pendingBar" class="pending-bar" style="display:none;">
+        <span data-i18n="pendingMsg">Bạn có một đơn đang chờ xác nhận thanh toán.</span>
+        <button class="btn btn-brand" onclick="reopenPendingOrder()" data-i18n="pendingOpen">Mở lại mã QR</button>
       </div>
 
       <div id="storeBannerContainer"></div>
@@ -1199,14 +1241,11 @@
             <div class="options-title" data-i18n="descTitle">Mô tả sản phẩm:</div>
             <div id="detailDescription" class="description-box"></div>
             <div class="options-title" data-i18n="optionsTitle">Các lựa chọn có sẵn:</div>
-            
-            <!-- Khu vực hiển thị các nút lựa chọn dàn hàng ngang -->
+
             <div id="detailOptionList" class="options-grid"></div>
 
-            <!-- Thông báo sắp hết hàng của lựa chọn đang chọn -->
             <div id="stockNotice" class="stock-notice"></div>
 
-            <!-- Khu vực số lượng và nút thêm vào giỏ nằm ở hàng bên dưới -->
             <div class="action-row">
                 <div class="qty-control">
                     <button class="qty-btn" onclick="changeQty(-1)">-</button>
@@ -1237,7 +1276,7 @@
   <img id="lightboxImg" class="lightbox-img" src="" alt="Zoom">
 </div>
 
-<!-- MODAL TRA CỨU -->
+<!-- MODAL TRA CỨU (chỉ Order) -->
 <div class="modal-overlay" id="trackModal">
   <div class="modal-content">
     <button class="close-btn" onclick="closeModal('trackModal')"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
@@ -1249,60 +1288,102 @@
   </div>
 </div>
 
-<!-- MODAL GIỎ HÀNG -->
+<!-- MODAL GIỎ HÀNG (phần form khác nhau theo chế độ) -->
 <div class="modal-overlay" id="cartModal">
   <div class="modal-content">
     <button class="close-btn" onclick="closeModal('cartModal')"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
     <h3 style="margin-top:0;color:#050c1a;" data-i18n="cartTitle">Giỏ hàng của bạn</h3>
     <div id="cartList">Ở đây trống trải quá...</div>
     <div style="text-align:right;font-size:18px;font-weight:700;margin:15px 0;color:#050c1a;" id="totalPrice">Tổng: 0đ</div>
-    
+
     <hr style="border:none;border-top:1px solid #dcd6d1;margin:20px 0;">
-    <h3 style="color:#050c1a;" data-i18n="shipTitle">Thông tin giao hàng</h3>
-    
-    <input type="text" id="custPhone" data-i18n-placeholder="phPhone" placeholder="Số điện thoại (*)">
-    <small class="error-msg" id="errPhone" style="display:none;"></small>
 
-    <input type="text" id="custName" data-i18n-placeholder="phName" placeholder="Họ và tên người nhận (*)">
-    <small class="error-msg" id="errName" style="display:none;"></small>
+    <!-- FORM ORDER: thông tin giao hàng -->
+    <div class="only-order">
+      <h3 style="color:#050c1a;" data-i18n="shipTitle">Thông tin giao hàng</h3>
 
-    <input type="email" id="custEmail" placeholder="Email (*)">
-    <small class="error-msg" id="errEmail" style="display:none;"></small>
+      <input type="text" id="custPhone" data-i18n-placeholder="phPhone" placeholder="Số điện thoại (*)">
+      <small class="error-msg" id="errPhone" style="display:none;"></small>
 
-    <textarea id="custAddress" data-i18n-placeholder="phAddr" placeholder="Địa chỉ giao hàng (*)" rows="2"></textarea>
-    <small class="error-msg" id="errAddress" style="display:none;"></small>
+      <input type="text" id="custName" data-i18n-placeholder="phName" placeholder="Họ và tên người nhận (*)">
+      <small class="error-msg" id="errName" style="display:none;"></small>
 
-    <input type="url" id="custFb" data-i18n-placeholder="phFb" placeholder="Link Facebook (*)">
-    <small class="error-msg" id="errFb" style="display:none;"></small>
+      <input type="email" id="custEmail" data-i18n-placeholder="phEmail" placeholder="Email (*)">
+      <small class="error-msg" id="errEmail" style="display:none;"></small>
 
-    <textarea id="custNote" data-i18n-placeholder="phNote" placeholder="Ghi chú đơn hàng" rows="2"></textarea>
+      <textarea id="custAddress" data-i18n-placeholder="phAddr" placeholder="Địa chỉ giao hàng (*)" rows="2"></textarea>
+      <small class="error-msg" id="errAddress" style="display:none;"></small>
+
+      <input type="url" id="custFb" data-i18n-placeholder="phFb" placeholder="Link Facebook (*)">
+      <small class="error-msg" id="errFb" style="display:none;"></small>
+
+      <textarea id="custNote" data-i18n-placeholder="phNote" placeholder="Ghi chú đơn hàng" rows="2"></textarea>
+    </div>
+
+    <!-- FORM KEEP: thông tin nhận hàng -->
+    <div class="only-keep">
+      <h3 style="color:#050c1a;" data-i18n="pickupTitle">Thông tin nhận hàng</h3>
+
+      <input type="email" id="keepEmail" data-i18n-placeholder="phEmail" placeholder="Email (*)" autocomplete="off">
+      <small class="error-msg" id="errKeepEmail" style="display:none;"></small>
+
+      <input type="text" id="keepFb" data-i18n-placeholder="phKeepFb" placeholder="Link Facebook (*)">
+      <small class="error-msg" id="errKeepFb" style="display:none;"></small>
+
+      <input type="text" id="keepPickupName" data-i18n-placeholder="phPickupName" placeholder="Tên Pick Up (*)">
+      <small class="error-msg" id="errKeepPickupName" style="display:none;"></small>
+
+      <select id="keepPickupDate">
+        <option value="" data-i18n="selectPickupDate">-- Chọn Ngày pick up (*) --</option>
+      </select>
+      <small class="error-msg" id="errKeepPickupDate" style="display:none;"></small>
+
+      <textarea id="keepNote" data-i18n-placeholder="phNote" placeholder="Ghi chú đơn hàng" rows="2"></textarea>
+    </div>
 
     <button id="btnSubmitOrder" class="btn btn-success" style="width:100%;padding:12px;margin-top:10px;" onclick="submitOrder(event)">Xác nhận đơn Hàng</button>
   </div>
 </div>
 
-<!-- MODAL THANH TOÁN -->
+<!-- MODAL CHỌN HÌNH THỨC THANH TOÁN (chỉ Keep) -->
+<div class="modal-overlay" id="selectPaymentModal">
+  <div class="modal-content" style="text-align:center;">
+    <button class="close-btn" onclick="closeModal('selectPaymentModal')"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    <h3 style="color:#050c1a;margin-top:0;" data-i18n="payMethodTitle">Phương thức thanh toán</h3>
+    <p data-i18n="payMethodHint">Vui lòng chọn hình thức thanh toán bạn muốn sử dụng:</p>
+
+    <div class="payment-options-container" id="payOptionsBox">
+      <div class="payment-card" onclick="choosePaymentMethod('fes')" data-i18n="payAtFes">Thanh toán tại fes</div>
+      <div class="payment-card" onclick="choosePaymentMethod('transfer')" data-i18n="payTransfer">Chuyển khoản luôn</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL THANH TOÁN QR (dùng chung) -->
 <div class="modal-overlay" id="paymentModal">
   <div class="modal-content" style="text-align:center;max-width:380px;padding:22px 18px;">
+    <button class="close-btn" onclick="closeModal('paymentModal')"><svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L13 13M13 1L1 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
     <div id="qrStep1">
-      <h3 style="color:#050c1a;margin-top:0;" data-i18n="payTitle">Thanh toán để hoàn thành đơn</h3>
-      <p><span data-i18n="orderCode">Mã đơn:</span> <b id="resOrderId" style="font-size:15px; color:#050c1a;"></b></p>
+      <h3 style="color:#050c1a;margin-top:0;" data-i18n="payTitle" data-i18n-keep="payTitleKeep">Thanh toán để hoàn thành đơn</h3>
+      <p class="only-order"><span data-i18n="orderCode">Mã đơn:</span> <b id="resOrderId" style="font-size:15px; color:#050c1a;"></b></p>
       <p><span data-i18n="totalMoney">Tổng tiền:</span> <b id="resTotalAmount" style="font-size:18px; color:#050c1a;"></b> <span data-i18n="vnd">VNĐ</span></p>
       <p style="font-size:14px;color:#555;margin:15px 0;" data-i18n="scanQr">Quét mã QR bên dưới để chuyển khoản:</p>
       <img id="qrImg" src="" alt="QR Code" style="max-width:250px;border-radius:8px;border:2px solid #050c1a;margin-bottom:15px;"><br>
-      <button id="btnPaidConfirm" onclick="confirmPaymentDone()" style="background-color:#050c1a;color:#fff;border:none;padding:12px 24px;font-size:15px;font-weight:700;border-radius:50px;cursor:pointer;">
+      <button id="btnPaidConfirm" onclick="confirmPaymentDone()" style="background-color:#050c1a;color:#fff;border:none;padding:12px 24px;font-size:15px;font-weight:700;border-radius:50px;cursor:pointer;" data-i18n="paidConfirm" data-i18n-keep="paidConfirmKeep">
         Xác nhận đã thanh toán
       </button>
+      <p style="font-size:12.5px;color:#555;margin:14px 0 0;line-height:1.5;" data-i18n="pendingHint">Đã chuyển khoản xong? Hãy quay lại đây bấm xác nhận. Nếu lỡ thoát trang, đơn vẫn được giữ lại trên máy này.</p>
+      <a href="javascript:void(0)" onclick="cancelPendingOrder()" style="display:inline-block;margin-top:8px;font-size:12.5px;color:#8a8480;text-decoration:underline;" data-i18n="pendingCancel">Hủy đơn này</a>
     </div>
-    <div id="qrStep2" style="display:none;text-align:center;color:#050c1a;">
+    <div id="qrStep2" class="only-order" style="display:none;text-align:center;color:#050c1a;">
       <div style="width:52px;height:52px;border-radius:50%;background:#050c1a;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 0 C12.5 8.5 15.5 11.5 24 12 C15.5 12.5 12.5 15.5 12 24 C11.5 15.5 8.5 12.5 0 12 C8.5 11.5 11.5 8.5 12 0 Z"/>
         </svg>
       </div>
       <h3 style="color:#050c1a;font-weight:800;margin:0 0 20px;font-size:17px;letter-spacing:0.1px;text-transform:uppercase;line-height:1.3;white-space:nowrap;" data-i18n="orderSuccess">Đặt hàng thành công!</h3>
-      <p style="line-height:1.6;margin:0 0 12px;" data-i18n="paySuccess1">Đơn hàng đang được xác nhận thanh toán. Bạn sẽ nhận email thông báo trong vòng 1-2 ngày (*ᴗ͈ˬᴗ͈)ꕤ*.ﾟ</p>
-      <p style="line-height:1.6;margin:0 0 24px;" data-i18n-html="paySuccess2">Nếu có gì thắc mắc, hãy nhắn tin qua fanpage <b>Theatre of Tales</b> để tụi mình hỗ trợ nhé ദ്ദി(｡•̀ ,&lt;)~✩‧₊</p>
+      <p style="line-height:1.6;margin:0 0 12px;" data-i18n="paySuccess1">Đơn hàng đang được xác nhận thanh toán.</p>
+      <p style="line-height:1.6;margin:0 0 24px;" data-i18n-html="paySuccess2">Nếu có gì thắc mắc, hãy nhắn tin qua fanpage <b>Theatre of Tales</b> để tụi mình hỗ trợ nhé</p>
       <div onclick="closeModal('paymentModal')" style="display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;">
         <span style="flex:1;max-width:60px;height:1px;background:#050c1a;"></span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="#050c1a" xmlns="http://www.w3.org/2000/svg"><path d="M12 0 C12.5 8.5 15.5 11.5 24 12 C15.5 12.5 12.5 15.5 12 24 C11.5 15.5 8.5 12.5 0 12 C8.5 11.5 11.5 8.5 12 0 Z"/></svg>
@@ -1313,6 +1394,51 @@
     </div>
   </div>
 </div>
-  <script src="Script.js"></script>
+
+<!-- MODAL VÉ SAU KHI ĐẶT (chỉ Keep) -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-content ticket-bill-modal-content">
+    <div class="receipt-wrapper">
+      <div class="thermal-receipt" id="ticketBillArea">
+        <div class="receipt-header">
+          <img src="https://i.ibb.co/GQkssRQH/Theatre-of-Teyvat-golden-logo.png" alt="Theatre of Tales Logo" class="receipt-logo">
+        </div>
+        <hr class="receipt-divider">
+        <div class="receipt-cust-info">
+          <div class="receipt-cust-name">
+            <span data-i18n="ticketPickupName">Tên Pickup: </span><span id="ticketPickupName">--</span>
+          </div>
+          <div class="receipt-time-row">
+            <span id="ticketTime">--:-- --</span>, <span id="ticketDate">--/--/2026</span><span data-i18n="ticketPickupDate"> | Ngày nhận keep: </span><span id="ticketPickupDate" style="font-weight:700;">--</span>
+          </div>
+        </div>
+        <hr class="receipt-divider">
+        <div class="receipt-item-list" id="ticketItemList"></div>
+        <div class="receipt-note-row" id="ticketNoteRow" style="display:none;"></div>
+        <hr class="receipt-divider">
+        <div class="receipt-total-row">
+          <span data-i18n="ticketTotal">TỔNG GIÁ</span>
+          <span id="ticketTotalPrice">0 VNĐ</span>
+        </div>
+        <div class="fake-barcode-container">
+          <div class="fake-barcode-font">*TOT2026ORDER*</div>
+        </div>
+        <div class="receipt-payment-note" id="ticketPaymentNote">Trả tại Fes</div>
+        <div class="receipt-footer-text" data-i18n="ticketFooter">
+          Cảm ơn bạn đã ủng hộ tụi mình!
+        </div>
+      </div>
+    </div>
+    <div class="ticket-action-btns">
+      <button class="btn btn-brand" onclick="downloadTicketImage()" data-i18n="ticketSave">Lưu vé về máy</button>
+      <button class="btn btn-secondary" onclick="closeModal('successModal')" data-i18n="close">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="core.js"></script>
+<script src="order.js"></script>
+<script src="keep.js"></script>
 </body>
 </html>
